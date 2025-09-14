@@ -1,6 +1,6 @@
-# 📊 Post Dashboard
+# 📊 Posts Dashboard
 
-A responsive **Post Dashboard** built with **React.js**.  
+A responsive **Posts Dashboard** built with **React.js**.  
 The app integrates with the [DummyJSON API](https://dummyjson.com/posts) to display, manage, and interact with posts.  
 It includes forms, charts, map integration, notifications, and a clean UI with reusable components.
 
