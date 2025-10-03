@@ -11,11 +11,20 @@ const PostSchema = Yup.object().shape({
   title: Yup.string()
     .min(3, "Title must be at least 3 characters")
     .required("Title is required"),
+
   body: Yup.string()
     .min(10, "Body must be at least 10 characters")
     .required("Body is required"),
-  tags: Yup.array()
-    .of(Yup.string().min(2, "Tag must be at least 2 characters"))
+
+  // per-tag validation
+  tags: Yup.array().of(
+    Yup.string()
+      .min(2, "Tag must be at least 2 characters")
+      .required("Tag cannot be empty")
+  ),
+
+  // array length validation
+  tagsLength: Yup.number()
     .min(1, "At least one tag is required")
     .max(5, "You can add 5 tags maximum"),
 });
@@ -24,29 +33,26 @@ const PostsForm = ({ onClose, editing }) => {
   const dispatch = useDispatch();
 
   return (
-    <div className="max-h-[330px] lg:max-h-[400px] 2xl:max-h-[450px] overflow-auto p-1">
+    <div className="max-h-[80vh] overflow-auto p-1">
       {/* Form */}
       <Formik
         initialValues={{
           title: editing?.title || "",
           body: editing?.body || "",
           tags: editing?.tags || [],
+          tagsLength: editing?.tags?.length || 0,
         }}
         validationSchema={PostSchema}
         onSubmit={(values) => {
-          // Handle empty tags fields
-          if (values?.tags?.some((tag) => tag == "")) {
-            toast.error("You must fill all tags fields");
-            return;
-          }
+          // don’t send tagsLength to backend
+          const { tagsLength, ...formData } = values;
 
-          // If available data handle add or edit posts
           if (editing) {
-            dispatch(updatePost({ id: editing.id, formData: values }));
+            dispatch(updatePost({ id: editing.id, formData }));
             toast.success("Post updated");
           } else {
-            dispatch(addPost(values));
-            toast.success("Post added");
+            dispatch(addPost(formData));
+            toast.success("Post added successfully");
           }
           onClose();
         }}
@@ -88,33 +94,47 @@ const PostsForm = ({ onClose, editing }) => {
             {/* Tags */}
             <div>
               <FieldArray name="tags">
-                {({ push, remove }) => (
+                {({ push, remove, form }) => (
                   <div className="space-y-2">
-                    {values.tags.map((tag, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <Field
+                    {values?.tags?.map((tag, index) => (
+                      <div key={index} className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <Field
+                            name={`tags.${index}`}
+                            placeholder="Enter tag"
+                            className="border rounded-xl p-2 w-full shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              remove(index)
+                              form.setFieldValue("tagsLength", form.values?.tags?.length - 1);
+                            }}
+                            className="p-2 rounded-full hover:bg-gray-200 transition cursor-pointer"
+                          >
+                            <div className="bg-red-500 rounded-full p-1">
+                              <X
+                                size={18}
+                                className="text-white font-bold text-center"
+                              />
+                            </div>
+                          </button>
+                        </div>
+                        {/* Show error for each tag */}
+                        <ErrorMessage
                           name={`tags.${index}`}
-                          placeholder="Enter tag"
-                          className="border rounded-xl p-2 w-full shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          component="div"
+                          className="text-red-500 text-sm"
                         />
-                        <button
-                          type="button"
-                          onClick={() => remove(index)}
-                          className="p-2 rounded-full hover:bg-gray-200 transition cursor-pointer"
-                        >
-                          <div className="bg-red-500 rounded-full p-1">
-                            <X
-                              size={18}
-                              className="text-white font-bold text-center"
-                            />
-                          </div>
-                        </button>
                       </div>
                     ))}
 
                     <button
                       type="button"
-                      onClick={() => push("")}
+                      onClick={() => {
+                        push("");
+                        form.setFieldValue("tagsLength", form.values?.tags?.length + 1);
+                      }}
                       className="cursor-pointer text-sm px-3 py-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-700 transition"
                     >
                       + Add Tag
@@ -122,8 +142,10 @@ const PostsForm = ({ onClose, editing }) => {
                   </div>
                 )}
               </FieldArray>
+
+              {/* Array-level errors (min/max count) */}
               <ErrorMessage
-                name="tags"
+                name="tagsLength"
                 component="div"
                 className="text-red-500 text-sm mt-1"
               />
