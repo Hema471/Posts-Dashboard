@@ -38,7 +38,7 @@ const RegisterSchema = Yup.object().shape({
 });
 
 export default function RegisterPage() {
-  const [location, setLocation] = useState([30.0444, 31.2357]);
+  const [location, setLocation] = useState([40.7128, -74.0060]);
   const [showMap, setShowMap] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -127,7 +127,7 @@ export default function RegisterPage() {
                   Phone
                 </label>
                 <PhoneInput
-                  country={"eg"}
+                  country={"us"}
                   value={values.phone}
                   onChange={(value) => setFieldValue("phone", value)}
                   enableSearch
@@ -240,7 +240,7 @@ export default function RegisterPage() {
               {showMap && (
                 <div className="md:col-span-2">
                   <MapContainer
-                    center={[30.0444, 31.2357]}
+                    center={[40.7128, -74.0060]}
                     zoom={6}
                     style={{
                       height: "250px",

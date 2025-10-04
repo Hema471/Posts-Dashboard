@@ -39,7 +39,7 @@ const ProfileSchema = Yup.object().shape({
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
-  const [location, setLocation] = useState([30.0444, 31.2357]);
+  const [location, setLocation] = useState([40.7128, -74.0060]);
   const [showMap, setShowMap] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -164,7 +164,7 @@ export default function ProfilePage() {
                       Phone Number
                     </label>
                     <PhoneInput
-                      country={"eg"}
+                      country={"us"}
                       value={values.phone}
                       onChange={(value) => setFieldValue("phone", value)}
                       enableSearch

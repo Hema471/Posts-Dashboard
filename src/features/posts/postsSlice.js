@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const API_URL = "https://dummyjson.com/posts";
+const API_URL = import.meta.env.VITE_URL_DUMMY_API;
 
 // Fetch posts
 export const fetchPosts = createAsyncThunk(
