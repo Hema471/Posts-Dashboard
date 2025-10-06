@@ -3,31 +3,12 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Eye, EyeOff, X } from "lucide-react";
 import { logout } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
-
-// Fix marker icons
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-});
-
-// Market icon
-const googlePin = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // nice modern red pin
-  iconSize: [38, 38], // slightly bigger, scalable
-  iconAnchor: [19, 38], // anchor at bottom center
-  popupAnchor: [0, -35], // popup above the pin
-});
+import MapComponent from './../../components/MapComponent';
 
 // Validation schema
 const ProfileSchema = Yup.object().shape({
@@ -52,11 +33,11 @@ export default function ProfilePage() {
     const usersJson = localStorage.getItem("registered_users");
     const users = usersJson ? JSON.parse(usersJson) : [];
 
-    const found = users.find((u) => u.email == loggedUser?.email);
+    const found = users?.find((u) => u.email == loggedUser?.email);
     if (found) {
       setUser(found);
-      if (found.location) {
-        setLocation(found.location);
+      if (found?.location) {
+        setLocation(found?.location);
         setShowMap(true);
       }
     }
@@ -250,21 +231,7 @@ export default function ProfilePage() {
                 </label>
                 {showMap && (
                   <div className="overflow-hidden rounded-xl border">
-                    <MapContainer
-                      center={location}
-                      zoom={6}
-                      style={{ height: "300px", width: "100%" }}
-                    >
-                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      {location && (
-                        <Marker
-                          draggable={true}
-                          position={location}
-                          icon={googlePin}
-                          eventHandlers={{ dragend: handleDragEnd }}
-                        />
-                      )}
-                    </MapContainer>
+                   <MapComponent location={location} handleDragEnd={handleDragEnd} />
                   </div>
                 )}
               </div>

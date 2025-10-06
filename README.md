@@ -55,5 +55,6 @@ src/
  ├── components/       # Reusable UI components (Modal, Table, etc...)
  ├── features/         # Redux slices & state management
  ├── pages/            # Main pages (Dashboard, Posts, Profile, etc...)
- ├── App.js            # Main app entry
+ ├── App.jsx           # Main app entry
  └── main.jsx          # Render root
+.env                   # File to simplify API management

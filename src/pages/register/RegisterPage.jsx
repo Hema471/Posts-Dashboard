@@ -3,29 +3,10 @@ import toast from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Eye, EyeOff, X } from "lucide-react";
-
-// Fix marker icons for Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-});
-
-// Market icon
-const googlePin = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // nice modern red pin
-  iconSize: [38, 38], // slightly bigger, scalable
-  iconAnchor: [19, 38], // anchor at bottom center
-  popupAnchor: [0, -35], // popup above the pin
-});
+import MapComponent from "../../components/MapComponent";
 
 // Validation schema
 const RegisterSchema = Yup.object().shape({
@@ -239,27 +220,7 @@ export default function RegisterPage() {
               {/* Map */}
               {showMap && (
                 <div className="md:col-span-2">
-                  <MapContainer
-                    center={[40.7128, -74.0060]}
-                    zoom={6}
-                    style={{
-                      height: "250px",
-                      width: "100%",
-                      borderRadius: "12px",
-                    }}
-                  >
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {location && (
-                      <Marker
-                        draggable={true}
-                        position={location}
-                        icon={googlePin}
-                        eventHandlers={{
-                          dragend: handleDragEnd,
-                        }}
-                      />
-                    )}
-                  </MapContainer>
+                 <MapComponent location={location} handleDragEnd={handleDragEnd} />
                 </div>
               )}
 
